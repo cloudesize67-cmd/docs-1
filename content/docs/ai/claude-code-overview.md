@@ -19,10 +19,9 @@ Claude Code is available in several environments:
 | Environment | Access |
 |---|---|
 | Terminal | `npm install -g @anthropic-ai/claude-code` |
-| VS Code / Cursor / Devin Desktop | [VS Code extension](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) |
+| VS Code | [VS Code extension](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code) |
 | JetBrains IDEs | [JetBrains plugin](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) |
 | Web and mobile | [claude.ai/code](https://claude.ai/code) |
-| Slack | Available via the Slack app directory |
 
 ## Models
 
@@ -52,7 +51,7 @@ Claude Code runs locally in your terminal and communicates directly with model A
 
 ## System requirements
 
-Claude Code runs on macOS, Linux, and Windows. See the [official setup guide](https://code.claude.com/docs/en/overview) for full system requirements.
+Claude Code runs on macOS, Linux, and Windows.
 
 ## Using Claude Code with Railway
 

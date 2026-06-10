@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { allPages, allGuides } from "content-collections";
+import { allPages } from "content-collections";
 
 const pageUrlSet = new Set(allPages.map(page => page.url));
-const guideUrlSet = new Set(allGuides.map(guide => guide.url));
+
+// Matches /guides/<slug> — one path segment, no deeper nesting.
+// Avoids importing allGuides (and its compiled MDX bodies) into the Edge bundle.
+const guidePathRe = /^\/guides\/[^/]+$/;
 
 function prefersMarkdown(acceptHeader: string): boolean {
   const types = acceptHeader.split(",");
@@ -23,7 +26,7 @@ export function middleware(request: NextRequest) {
   const pagePath = hasMdExtension ? pathname.slice(0, -3) : pathname;
 
   const isPage = pageUrlSet.has(pagePath);
-  const isGuide = guideUrlSet.has(pagePath);
+  const isGuide = !isPage && guidePathRe.test(pagePath);
 
   if (!isPage && !isGuide) {
     return NextResponse.next();
@@ -36,6 +39,7 @@ export function middleware(request: NextRequest) {
 
   // For guides, only intercept when markdown is requested — normal guide requests
   // are handled by pages/guides/[...slug].tsx via the default Next.js routing.
+  // If the slug doesn't match a real guide the dynamic handler returns 404.
   if (isGuide && !wantsMarkdown) {
     return NextResponse.next();
   }

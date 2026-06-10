@@ -30,7 +30,10 @@ import { H2, H3, H4 } from "@/components/header";
 import { Anchor } from "@/components/anchor";
 import { GetServerSidePropsContext } from "next";
 import { TallyButton } from "@/components/tally-button";
-import { reconstructMarkdownWithFrontmatter } from "@/utils/markdown";
+import {
+  reconstructMarkdownWithFrontmatter,
+  reconstructGuideMarkdownWithFrontmatter,
+} from "@/utils/markdown";
 import { allGuides } from "content-collections";
 
 const components: Record<string, React.ElementType> = {
@@ -100,14 +103,23 @@ export const getServerSideProps = async (
   // Return raw markdown if format=md — supports both docs pages and guides
   if (context.query.format === "md") {
     const guide = page ? null : allGuides.find(g => g.url === slugPath);
-    const source = page || guide;
-    if (!source) {
+    if (!page && !guide) {
       return { notFound: true };
     }
-    const markdown = reconstructMarkdownWithFrontmatter(
-      { title: source.title, description: source.description, url: source.url },
-      source.body.raw,
-    );
+    const markdown = guide
+      ? reconstructGuideMarkdownWithFrontmatter({
+          title: guide.title,
+          description: guide.description,
+          topic: guide.topic,
+          date: guide.date,
+          tags: guide.tags,
+          author: guide.author,
+          rawMarkdown: guide.body.raw,
+        })
+      : reconstructMarkdownWithFrontmatter(
+          { title: page!.title, description: page!.description, url: page!.url },
+          page!.body.raw,
+        );
     context.res.setHeader("Content-Type", "text/markdown; charset=utf-8");
     context.res.write(markdown);
     context.res.end();
